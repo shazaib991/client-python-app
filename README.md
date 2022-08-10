@@ -6,7 +6,8 @@ Requires python and node.
 
 1. `pip install flask`
 2. `pip install flask-cors`
-3. `cd client && npm install`
+3. `pip install pycryptodome`
+4. `cd client && npm install`
 
 <b> The run.py Python file is configured with the react build path which contains the static webpage (template_folder & static_folder), so test with Production </b>
 

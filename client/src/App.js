@@ -14,32 +14,6 @@ function App() {
   let browserName = "";
   let dimentions = `${window.innerWidth}x${window.innerHeight}`;
 
-  const getIpAddress = async () => {
-    try {
-      const response = await axios.get("https://api.ipify.org?format=json");
-      const userIp = response.data;
-      setUserIp(userIp.ip);
-    } catch (err) {
-      setUserIp("could not get ip address");
-      console.log(err);
-    }
-  };
-
-  const getData = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:5000/test");
-      const data = response.data;
-
-      setData(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    getIpAddress();
-  }, []);
-
   //using media query to check mobile or desktop
   if (window.matchMedia("(max-width: 767px)").matches) {
     device = "mobile or tablet";
@@ -63,6 +37,52 @@ function App() {
     setAcceptCookie("accepted");
   };
 
+  const getData = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:5000/getData");
+      const data = response.data;
+
+      setData(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const postData = async (userIp) => {
+    try {
+      const jsonData = {
+        language,
+        device,
+        browserName,
+        browserDimentions: dimentions,
+        ipAddress: userIp,
+        cookieStatus: acceptCookie,
+      };
+      const response = await axios.post(
+        "http://127.0.0.1:5000/addData",
+        jsonData
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getIpAddress = async () => {
+    try {
+      const response = await axios.get("https://api.ipify.org?format=json");
+      const userIp = response.data;
+      setUserIp(userIp.ip);
+      postData(userIp.ip);
+    } catch (err) {
+      setUserIp("could not get ip address");
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getIpAddress();
+  }, []);
+
   return (
     <>
       <div className="App">
@@ -85,26 +105,30 @@ function App() {
         <button onClick={getData}>show stored data</button>
         {data.length !== 0 ? (
           <table>
-            <tr>
-              <th>language</th>
-              <th>device</th>
-              <th>browser name</th>
-              <th>browser dimentions</th>
-              <th>ip address</th>
-              <th>cookie status</th>
-            </tr>
-            {data.map((item, index) => {
-              return (
-                <tr key={index}>
-                  <td>{item.language}</td>
-                  <td>{item.device}</td>
-                  <td>{item.browserName}</td>
-                  <td>{item.browserDimentions}</td>
-                  <td>{item.ipAddress}</td>
-                  <td>{item.cookieStatus}</td>
-                </tr>
-              );
-            })}
+            <thead>
+              <tr>
+                <th>language</th>
+                <th>device</th>
+                <th>browser name</th>
+                <th>browser dimentions</th>
+                <th>ip address</th>
+                <th>cookie status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{item.language.slice(1, -1)}</td>
+                    <td>{item.device.slice(1, -1)}</td>
+                    <td>{item.browserName.slice(1, -1)}</td>
+                    <td>{item.browserDimentions.slice(1, -1)}</td>
+                    <td>{item.ipAddress.slice(1, -1)}</td>
+                    <td>{item.cookieStatus.slice(1, -1)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         ) : (
           ""
