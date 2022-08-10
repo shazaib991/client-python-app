@@ -6,6 +6,7 @@ function App() {
   const [acceptCookie, setAcceptCookie] = useState(
     document.cookie.includes("status=accepted") ? "accepted" : "not accepted"
   );
+  const [data, setData] = useState([]);
   const [userIp, setUserIp] = useState("");
 
   const language = window.navigator.language || window.navigator.userLanguage;
@@ -14,10 +15,25 @@ function App() {
   let dimentions = `${window.innerWidth}x${window.innerHeight}`;
 
   const getIpAddress = async () => {
-    const response = await axios.get("https://api.ipify.org?format=json");
-    const userIp = await response.data;
+    try {
+      const response = await axios.get("https://api.ipify.org?format=json");
+      const userIp = response.data;
+      setUserIp(userIp.ip);
+    } catch (err) {
+      setUserIp("could not get ip address");
+      console.log(err);
+    }
+  };
 
-    setUserIp(userIp.ip);
+  const getData = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:5000/test");
+      const data = response.data;
+
+      setData(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -65,6 +81,35 @@ function App() {
       ) : (
         ""
       )}
+      <div>
+        <button onClick={getData}>show stored data</button>
+        {data.length !== 0 ? (
+          <table>
+            <tr>
+              <th>language</th>
+              <th>device</th>
+              <th>browser name</th>
+              <th>browser dimentions</th>
+              <th>ip address</th>
+              <th>cookie status</th>
+            </tr>
+            {data.map((item, index) => {
+              return (
+                <tr key={index}>
+                  <td>{item.language}</td>
+                  <td>{item.device}</td>
+                  <td>{item.browserName}</td>
+                  <td>{item.browserDimentions}</td>
+                  <td>{item.ipAddress}</td>
+                  <td>{item.cookieStatus}</td>
+                </tr>
+              );
+            })}
+          </table>
+        ) : (
+          ""
+        )}
+      </div>
     </>
   );
 }

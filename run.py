@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import os
 
 # Set the template and static folder to the client build
@@ -8,7 +9,23 @@ app.config['SECRET_KEY'] = 'super secret key'
 app.config['SITE'] = "http://0.0.0.0:5000/"
 app.config['DEBUG'] = True
 
-languages = [{'name' : 'JavaScript'}, {'name' : 'Python'}, {'name' : 'Ruby'}]
+CORS(app)
+
+languages = [{
+  "language": "en-US",
+  "device": "desktop or laptop",
+  "browserName": "chrome",
+  "browserDimentions": "1920x1080",
+  "ipAddress": "52.23.54.5.2",
+  "cookieStatus": "accepted"
+},{
+  "language": "ar",
+  "device": "mobile",
+  "browserName": "edge",
+  "browserDimentions": "1440x1080",
+  "ipAddress": "12.23.56.102",
+  "cookieStatus": "not accepted"
+}]
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -21,7 +38,7 @@ def catch_all(path):
 def login():
     """ An example endpoint """
     if request.method == 'GET':
-        return jsonify({'languages' : languages}),200
+        return jsonify(languages),200
     
 @app.route('/test', methods=['POST'])
 def addOne():
